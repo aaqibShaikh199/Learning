@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: aaqibshaikh199/istio-learning:VIRTUAL-SERVICE-01
+        image: aaqibshaikh199/istio-learning:CONTAINER-01
         imagePullPolicy: Always
         ports:
         - containerPort: 80
@@ -37,7 +37,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: aaqibshaikh199/istio-learning:VIRTUAL-SERVICE-02
+        image: aaqibshaikh199/istio-learning:CONTAINER-01
         imagePullPolicy: Always
         ports:
         - containerPort: 80
