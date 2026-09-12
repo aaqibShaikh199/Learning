@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: server-one
+  namespace: vs-demo
+spec:
+  selector:
+    app: server-one
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: server-two
+  namespace: vs-demo
+spec:
+  selector:
+    app: server-two
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
