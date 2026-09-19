@@ -1,0 +1,18 @@
+apiVersion: security.istio.io/v1
+kind: PeerAuthentication
+metadata:
+  name: server-one
+  namespace: one
+spec:
+  mtls:
+    mode: STRICT
+
+---
+apiVersion: security.istio.io/v1
+kind: PeerAuthentication
+metadata:
+  name: server-two
+  namespace: two
+spec:
+  mtls:
+    mode: STRICT
