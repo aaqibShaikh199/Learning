@@ -1,0 +1,38 @@
+#DEPLOYMENT 02
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server-two
+  namespace: two
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-two
+  template:
+    metadata:
+      labels:
+        app: service-two
+    spec:
+      containers:
+        - name: server
+          image: aaqibshaikh199/istio-learning:VIRTUAL-SERVICE-CONTAINER-02
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-two
+  namespace: two
+spec:
+  selector:
+    app: service-two
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      protocol: TCP
+  type: ClusterIP
