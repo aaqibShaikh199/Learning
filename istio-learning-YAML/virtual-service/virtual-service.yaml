@@ -1,0 +1,18 @@
+#VIRTUAL SERVICE
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: virtualservice-for-one
+  namespace: one
+spec:
+  hosts:
+  - service-one.one.svc.cluster.local
+  http:
+  - match:
+    - uri:
+        prefix: /hello
+    rewrite:
+      uri: /ip
+    route:
+    - destination:
+        host: service-one.one.svc.cluster.local
