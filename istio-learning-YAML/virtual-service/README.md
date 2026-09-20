@@ -1,40 +1,43 @@
-# Istio Virtual Service Learning — Curl Commands
+# Istio VirtualService URI Rewrite Test
 
-Run from inside a pod: `kubectl exec -it -n one deploy/server-one -- bash`
+Created **3 deployments** to test Istio `VirtualService` URI rewriting.
 
-## Deployment One
+* **Deployment 1:** Istio enabled + `VirtualService` applied.
+* **Deployment 2:** Istio sidecar enabled.
+* **Deployment 3:** Istio sidecar disabled.
 
-```bash
-curl server-one.one.svc.cluster.local/
-curl server-one.one.svc.cluster.local/hello
-curl server-one.one.svc.cluster.local/ip
-curl server-one.one.svc.cluster.local/host
-curl server-one.one.svc.cluster.local/headers
-curl server-one.one.svc.cluster.local/whoami
-curl server-one.one.svc.cluster.local/env
-curl server-one.one.svc.cluster.local/healthz
-curl -i server-one.one.svc.cluster.local/status/503
-curl server-one.one.svc.cluster.local/delay/3
-```
+### Test 1 — Deployment 2
 
-## Deployment Two
+Request:
 
 ```bash
-curl server-two.two.svc.cluster.local/
-curl server-two.two.svc.cluster.local/hello
-curl server-two.two.svc.cluster.local/ip
-curl server-two.two.svc.cluster.local/host
-curl server-two.two.svc.cluster.local/headers
-curl server-two.two.svc.cluster.local/whoami
-curl server-two.two.svc.cluster.local/env
-curl server-two.two.svc.cluster.local/healthz
-curl -i server-two.two.svc.cluster.local/status/503
-curl server-two.two.svc.cluster.local/delay/3
+curl http://service-one.one.svc.cluster.local/hello
 ```
 
-## Cross-namespace check
+Result:
+
+```text
+/hello → /ip
+```
+
+✅ Rewrite worked because the request passed through the Istio sidecar.
+
+### Test 2 — Deployment 3
+
+Same request:
 
 ```bash
-kubectl exec -n one deploy/server-one -- curl -s server-two.two.svc.cluster.local/whoami
-kubectl exec -n two deploy/server-two -- curl -s server-one.one.svc.cluster.local/whoami
+curl http://service-one.one.svc.cluster.local/hello
 ```
+
+Result:
+
+```text
+/hello → /hello
+```
+
+❌ Rewrite did not happen because Deployment 3 does not have an Istio sidecar.
+
+### Conclusion
+
+**Istio sidecar is required on the source workload for the `VirtualService` routing/rewrite rule to be applied.**
