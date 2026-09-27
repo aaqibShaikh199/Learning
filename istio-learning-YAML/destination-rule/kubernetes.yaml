@@ -1,0 +1,124 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traffic-80
+  labels:
+    app: traffic-demo
+    version: v80
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: traffic-demo
+      version: v80
+  template:
+    metadata:
+      labels:
+        app: traffic-demo
+        version: v80
+    spec:
+      containers:
+        - name: traffic-80
+          image: aaqibshaikh199/istio-learning:DESTINATION-RULES-CONTAINER-80
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traffic-20
+  labels:
+    app: traffic-demo
+    version: v20
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: traffic-demo
+      version: v20
+  template:
+    metadata:
+      labels:
+        app: traffic-demo
+        version: v20
+    spec:
+      containers:
+        - name: traffic-20
+          image: aaqibshaikh199/istio-learning:DESTINATION-RULES-CONTAINER-20
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: traffic-demo
+  labels:
+    app: traffic-demo
+spec:
+  selector:
+    app: traffic-demo
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: traffic-demo
+spec:
+  host: traffic-demo
+  subsets:
+    - name: v80
+      labels:
+        version: v80
+    - name: v20
+      labels:
+        version: v20
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: traffic-demo
+spec:
+  hosts:
+    - traffic-demo
+  http:
+    - route:
+        - destination:
+            host: traffic-demo
+            subset: v80
+          weight: 80
+        - destination:
+            host: traffic-demo
+            subset: v20
+          weight: 20
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testing-deployment
+  labels:
+    app: testing-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: testing-deployment
+  template:
+    metadata:
+      labels:
+        app: testing-deployment
+    spec:
+      containers:
+        - name: testing-deployment-container
+          image: aaqibshaikh199/istio-learning:VIRTUAL-SERVICE-CONTAINER-01
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
